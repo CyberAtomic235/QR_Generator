@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Generator</title>
+    <title>QR Code Generador</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -12,46 +12,53 @@
   <link rel="icon" type="image/webp" href="/favicon.webp">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1> FrankQV | QR Code Generator</h1>
-        </header>
-
+    <header>
+        <div class="header-content">
+            <h1><img src="https://external-content.duckduckgo.com/ip3/pcmarkett.co.ico"/> PcMarkett |
+                 QR Code Generador  </h1>
+            <div class="header-accent"></div>
+        </div>
+    </header>
+        <br> 
         <main>
             <div class="input-section">
                 <div class="input-group">
-                    <label for="baseText">Base Text (max 128 characters)</label>
+                    <label for="baseText">Texto (max 128 caracteres)</label>
                     <input type="text" id="baseText" placeholder="Enter base text" maxlength="256">
                     <span class="character-count">0/128</span>
-                    <div class="alert hidden">Text exceeds 128 characters!</div>
+                    <div class="alert hidden">texto base se puede exceder de 128 caracteres!</div>
+                     
                 </div>
 
                 <div class="input-group">
-                    <label for="quantity">Number of QR Codes</label>
+                    <label for="quantity">Numberos de QR codes</label>
                     <input type="number" id="quantity" min="1" max="1000" value="1">
                 </div>
 
                 <div class="input-group">
-                    <label for="startNumber">Starting Number (0001-9999)</label>
+                    <label for="startNumber">Comienzo Secuencia (0001-9999)</label>
                     <input type="number" id="startNumber" min="1" max="9999" value="1">
                 </div>
 
-                <button id="generateBtn" class="primary-btn">Generate QR Codes</button>
+                <button id="generateBtn" class="primary-btn">Generador QR Codes</button>
             </div>
 
             <div class="preview-section hidden">
                 <div class="action-buttons">
-                    <button id="downloadIndividual" class="secondary-btn">Download Individual Files</button>
-                    <button id="downloadZip" class="secondary-btn">Download as ZIP</button>
-                    <button id="downloadMerged" class="secondary-btn">Download Merged Image</button>
+                    <button id="downloadIndividual" class="secondary-btn">Descarga individual de Archivos</button>
+                    <button id="downloadZip" class="secondary-btn">Descargar ZIP</button>
+                    <button id="downloadMerged" class="secondary-btn">Descargar unir Imagene</button>
+
                 </div>
 
                 <div id="previewContainer" class="preview-grid"></div>
             </div>
         </main>
-
-        <footer>
-                <a style=" a:hover {color: #80e080}; color: none;   color: inherit;   text-decoration-style: none;  text-decoration: none;"; class="footer-links" href="https://github.com/CyberAtomic235">
+        
+       
+        <footer style="background-color: #fdfdfd;   font-size: 0.9rem; text-align: center; margin-top: 1rem ;
+        ">
+                <a style="  color: none;   color: inherit;   text-decoration-style: none;  text-decoration: none;"; class="footer-links" href="https://github.com/cyberatomic235" target="_blank">
                     Built by FranK-QV
                 </a>with 😊  <span class="corazon"></span>   |   ®<span id="current-year"></span>
 
@@ -69,6 +76,14 @@
             --text-color: #2c3e50;
             --border-color: #dcdde1;
             --spacing: 1rem;
+        }
+
+        :root {
+            --header-black: #1a1a1a;
+            --header-green: #2ecc71;
+            --header-blue: #3498db;
+            --header-yellow: rgba(255, 236, 179, 0.1);
+            --error-color: #e74c3c;
         }
 
         * {
@@ -92,11 +107,43 @@
             display: flex;
             flex-direction: column;
         }
-
+        /* header */
         header {
-            text-align: center;
-            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--header-black), var(--header-green));
+            padding: 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .header-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 0%,
+                var(--header-blue) 35%,
+                transparent 50%,
+                var(--header-yellow) 65%,
+                transparent 100%
+            );
+            opacity: 0.3;
+            animation: headerShine 8s infinite linear;
+        }
+
+        @keyframes headerShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        /* header::end */
 
         main {
             flex: 1;
@@ -220,6 +267,8 @@
             padding: 2rem 0;
             color: #666;
             font-size: 0.9rem;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
         
