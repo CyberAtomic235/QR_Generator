@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+      <!-- Favicon en formato  -->
+  <link rel="icon" type="image/webp" href="/favicon.webp">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1> FrankQV | QR Code Generator</h1>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="baseText">Base Text (max 128 characters)</label>
+                    <input type="text" id="baseText" placeholder="Enter base text" maxlength="256">
+                    <span class="character-count">0/128</span>
+                    <div class="alert hidden">Text exceeds 128 characters!</div>
+                </div>
+
+                <div class="input-group">
+                    <label for="quantity">Number of QR Codes</label>
+                    <input type="number" id="quantity" min="1" max="1000" value="1">
+                </div>
+
+                <div class="input-group">
+                    <label for="startNumber">Starting Number (0001-9999)</label>
+                    <input type="number" id="startNumber" min="1" max="9999" value="1">
+                </div>
+
+                <button id="generateBtn" class="primary-btn">Generate QR Codes</button>
+            </div>
+
+            <div class="preview-section hidden">
+                <div class="action-buttons">
+                    <button id="downloadIndividual" class="secondary-btn">Download Individual Files</button>
+                    <button id="downloadZip" class="secondary-btn">Download as ZIP</button>
+                    <button id="downloadMerged" class="secondary-btn">Download Merged Image</button>
+                </div>
+
+                <div id="previewContainer" class="preview-grid"></div>
+            </div>
+        </main>
+
+        <footer>
+                <a style=" a:hover {color: #80e080}; color: none;   color: inherit;   text-decoration-style: none;  text-decoration: none;"; class="footer-links" href="https://github.com/frankqv">
+                    Built by FranK-QV
+                </a>with 😊  <span class="corazon"></span>   |   ®<span id="current-year"></span>
+
+                <script>
+                    document.getElementById('current-year').textContent = new Date().getFullYear();
+                </script>    
+        </footer>
+    </div>
+
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --background-color: #f5f6fa;
+            --text-color: #2c3e50;
+            --border-color: #dcdde1;
+            --spacing: 1rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem var(--spacing);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        main {
+            flex: 1;
+        }
+
+        .input-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .character-count {
+            position: absolute;
+            right: 0.5rem;
+            top: 0;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .alert {
+            background-color: #ffecb3;
+            color: #996300;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .primary-btn {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+        }
+
+        .primary-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .secondary-btn {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            margin-right: 1rem;
+        }
+
+        .secondary-btn:hover {
+            background-color: var(--background-color);
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+        }
+
+        .action-buttons {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .qr-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .qr-preview canvas {
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        
+        /* Estilo del corazón */
+        .corazon {
+            position: relative;
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            transform: rotate(-45deg);
+            display: inline-block;
+            animation: latido 1s infinite;
+        }
+        .corazon::before,
+        .corazon::after {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        .corazon::before {
+            top: -7.5px;
+            left: 0;
+        }
+        .corazon::after {
+            left: 7.5px;
+            top: 0;
+        }
+        /* Animación para simular el latido del corazón */
+        @keyframes latido {
+            0%, 100% {
+                transform: scale(0.7) rotate(-45deg);
+            }
+            50% {
+                transform: scale(0.5) rotate(-45deg);
+            }
+        }
+        /********** end_footer **********/
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .secondary-btn {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+
+            .preview-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const baseTextInput = document.getElementById('baseText');
+            const quantityInput = document.getElementById('quantity');
+            const startNumberInput = document.getElementById('startNumber');
+            const generateBtn = document.getElementById('generateBtn');
+            const previewSection = document.querySelector('.preview-section');
+            const previewContainer = document.getElementById('previewContainer');
+            const characterCount = document.querySelector('.character-count');
+            const alert = document.querySelector('.alert');
+
+            let qrCodes = [];
+
+            // Character count and alertes
+            baseTextInput.addEventListener('input', () => {
+                const length = baseTextInput.value.length;
+                characterCount.textContent = `${length}/128`;
+                
+                if (length > 128) {
+                    alert.classList.remove('hidden');
+                } else {
+                    alert.classList.add('hidden');
+                }
+            });
+
+            // Generate QR codes
+            generateBtn.addEventListener('click', () => {
+                const baseText = baseTextInput.value;
+                const quantity = parseInt(quantityInput.value);
+                const startNum = parseInt(startNumberInput.value);
+
+                if (!baseText || !quantity || !startNum) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                if (startNum + quantity > 10000) {
+                    alert('Starting number + quantity cannot exceed 9999');
+                    return;
+                }
+
+                generateQRCodes(baseText, quantity, startNum);
+            });
+
+            function generateQRCodes(baseText, quantity, startNum) {
+                previewContainer.innerHTML = '';
+                qrCodes = [];
+                previewSection.classList.remove('hidden');
+
+                for (let i = 0; i < quantity; i++) {
+                    const number = (startNum + i).toString().padStart(4, '0');
+                    const text = `${baseText}${number}`;
+                    
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'qr-preview';
+                    
+                    const qr = new QRCode(wrapper, {
+                        text: text,
+                        width: 128,
+                        height: 128,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.L
+                    });
+
+                    const label = document.createElement('span');
+                    label.textContent = number;
+                    wrapper.appendChild(label);
+                    
+                    previewContainer.appendChild(wrapper);
+                    qrCodes.push({ element: wrapper.querySelector('canvas'), number });
+                }
+            }
+
+            // Download individual files
+            document.getElementById('downloadIndividual').addEventListener('click', () => {
+                qrCodes.forEach(({ element, number }) => {
+                    const link = document.createElement('a');
+                    link.download = `qr_${number}.png`;
+                    link.href = element.toDataURL();
+                    link.click();
+                });
+            });
+
+            // Download as ZIP
+            document.getElementById('downloadZip').addEventListener('click', async () => {
+                const zip = new JSZip();
+
+                qrCodes.forEach(({ element, number }) => {
+                    const imageData = element.toDataURL().split(',')[1];
+                    zip.file(`qr_${number}.png`, imageData, { base64: true });
+                });
+
+                const content = await zip.generateAsync({ type: 'blob' });
+                saveAs(content, 'qr_codes.zip');
+            });
+
+            // Download merged image
+            document.getElementById('downloadMerged').addEventListener('click', () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const padding = 50; // Increased spacing between QR codes
+                const cols = Math.ceil(Math.sqrt(qrCodes.length));
+                const qrSize = 128;
+
+                canvas.width = cols * (qrSize + padding) - padding;
+                canvas.height = Math.ceil(qrCodes.length / cols) * (qrSize + padding) - padding;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                qrCodes.forEach(({ element }, index) => {
+                    const x = (index % cols) * (qrSize + padding);
+                    const y = Math.floor(index / cols) * (qrSize + padding);
+                    ctx.drawImage(element, x, y);
+                });
+
+                const link = document.createElement('a');
+                link.download = 'merged_qr_codes.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+    </script>
+</body>
+</html>
