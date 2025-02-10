@@ -7,7 +7,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<!-- 
+QR v1 = string 10, + 4Nº
+QR v2 = string 25 to 43 , + 4Nº
+QR v3 = string 46 to 71 , + 4Nº
+QR v4 = string 72 to 99, + 4Nº
+Qr V5 = string 100 to 127 + 4Nº
+Configuracion en formato 0001
 
+-->
       <!-- Favicon en formato  -->
   <link rel="icon" type="image/webp" href="/favicon.webp">
 </head>
@@ -36,7 +44,7 @@
                 </div>
 
                 <div class="input-group">
-                    <label for="startNumber">Comienzo Secuencia (001-9999)</label>
+                    <label for="startNumber">Comienza en Secuencia (001-9999)</label>
                     <input type="number" id="startNumber" min="1" max="999" value="1">
                 </div>
 
